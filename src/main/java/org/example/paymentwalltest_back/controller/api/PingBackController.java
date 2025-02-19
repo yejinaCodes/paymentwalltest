@@ -7,10 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -24,7 +21,7 @@ public class PingBackController {
     @Value("${paymentwall.private-key}")
     private String privateKey;
     //payment에서 post해주기때문에 아래와 같이 매핑해줘야함
-    @PostMapping
+    @GetMapping
     public ResponseEntity<String> handlePingback(HttpServletRequest request, @RequestParam Map<String, String[]> params) { //Pingback requiredtype에 맞추기
         log.info("inside pingback");
         try {

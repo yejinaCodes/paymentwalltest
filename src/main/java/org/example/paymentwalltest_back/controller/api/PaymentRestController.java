@@ -36,8 +36,6 @@ public class PaymentRestController {
     @Value("${paymentwall.private-key}")
     private String privateKey;
 
-
-
     @GetMapping("/widgetUrl")
     public ResponseEntity<Map<String, String>> getWidgetUrl() {
         log.info("inside backend processing widget url");
@@ -66,7 +64,6 @@ public class PaymentRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     //deliveryconfirm해주기
     @PostMapping("/deliveryConfirmation")
