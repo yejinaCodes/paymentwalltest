@@ -29,12 +29,17 @@ public class PingBackController {
             Config.getInstance().setPublicKey(publicKey);
             Config.getInstance().setPrivateKey(privateKey);
 
+
             //Pingback생성하고 검증하기
             Pingback pingback = new Pingback(params, request.getRemoteAddr());
+            log.info("Pingback object created check");
+
             if (pingback.validate(true)) {
+                log.info("inside pingback validation")
                 String goods = pingback.getProductId();
                 String userId = pingback.getUserId();
                 if (pingback.isDeliverable()) {
+                    log.info("inside is deliberable");
                     // deliver Product to user with userId 나중에 refactor하기
 //                    paymentService.processDeliveryConfirmation(goods, userId); //need refactoring
                 } else if (pingback.isCancelable()) {
