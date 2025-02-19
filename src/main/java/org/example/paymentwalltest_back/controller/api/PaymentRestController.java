@@ -66,35 +66,8 @@ public class PaymentRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    //payment에서 post해주기때문에 아래와 같이 매핑해줘야함.
-    @PostMapping("/pingback")
-    public ResponseEntity<String> handlePingback(HttpServletRequest request, @RequestParam Map<String, String[]> params) { //Pingback requiredtype에 맞추기
-        log.info("inside pingback");
-        try {
-            Config.getInstance().setLocalApiType(Config.API_GOODS);
-            Config.getInstance().setPublicKey(publicKey);
-            Config.getInstance().setPrivateKey(privateKey);
 
-            //Pingback생성하고 검증하기
-            Pingback pingback = new Pingback(params, request.getRemoteAddr());
-            if (pingback.validate(true)) {
-                String goods = pingback.getProductId();
-                String userId = pingback.getUserId();
-                if (pingback.isDeliverable()) {
-                    // deliver Product to user with userId 나중에 refactor하기
-//                    paymentService.processDeliveryConfirmation(goods, userId); //need refactoring
-                } else if (pingback.isCancelable()) {
-                    // withdraw Product from user with userId
-                }
-                log.info("pingback all good!👍🏼");
-                return ResponseEntity.ok("OK"); //후 처리가 잘 완료되었을 경우 OK 반환하기
-            } else {
-                return ResponseEntity.badRequest().body(pingback.getErrorSummary());
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing pingback");
-        }
-    }
+
     //deliveryconfirm해주기
     @PostMapping("/deliveryConfirmation")
     public ResponseEntity<String> confirmDelivery() {
