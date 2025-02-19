@@ -35,7 +35,7 @@ public class PingBackController {
             log.info("Pingback object created check");
 
             if (pingback.validate(true)) {
-                log.info("inside pingback validation")
+                log.info("inside pingback validation");
                 String goods = pingback.getProductId();
                 String userId = pingback.getUserId();
                 if (pingback.isDeliverable()) {
