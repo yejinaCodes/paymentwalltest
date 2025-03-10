@@ -54,12 +54,14 @@ public class PaymentRestController {
 
             WidgetBuilder widgetBuilder = new WidgetBuilder("yejintest1", "pw_1");
 
+            String merchant_order_id = "123456789";
             widgetBuilder.setExtraParams(new LinkedHashMap<String, String>() {
                 {
                     put("email", "user@hostname.com");
                     put("history[registration_date]", "registered_date_of_user");
                     put("ps", "all"); // Replace the value of 'ps' with specific payment system short code for Widget API uni
                     put("success_url", "http://localhost:5173/success");
+                    put("merchant_order_id", merchant_order_id);
                 }
             });
             Widget widget = widgetBuilder.build();
@@ -119,7 +121,7 @@ public class PaymentRestController {
 
         try{
             //Request parameters
-            Map<String, String> params = new TreeMap<>(); // Using LinkedHashMap to maintain order
+            Map<String, String> params = new TreeMap<>(); //Tree map for alphabetical order. not linked map
             params.put("key", projectKey);
             params.put("ref", ref);
             params.put("uid", uid);
