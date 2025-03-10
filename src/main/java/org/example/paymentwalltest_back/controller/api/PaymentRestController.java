@@ -5,6 +5,7 @@ import com.paymentwall.java.Pingback;
 import com.paymentwall.java.Widget;
 import com.paymentwall.java.WidgetBuilder;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.xml.bind.DatatypeConverter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.coyote.Response;
 import org.apache.http.HttpResponse;
@@ -23,7 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 
 @RestController
@@ -96,4 +104,90 @@ public class PaymentRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Delivery confirmation failed");
         }
     }
-}
+
+    //for payment status api check response parameters
+    //required params = project key, ref, sign_version, sign
+    //ref = 2017ec5142817b8a7f09d99e2a8320b1
+
+    @GetMapping("/check-payment-status")
+    public ResponseEntity<String> checkPaymentStatus(@RequestParam(required=true) String ref,
+                                                     @RequestParam(required=false, defaultValue = "user40012") String uid,
+                                                     @RequestParam(required=false, defaultValue = "paymentStatusHandler") String callback){
+
+        String projectKey = "307be73d19ed10d185fb0c116d38fc3b";
+        String secretKey = "2017ec5142817b8a7f09d99e2a8320b1";
+
+        try{
+            //Request parameters
+            Map<String, String> params = new LinkedHashMap<>(); // Using LinkedHashMap to maintain order
+            params.put("key", projectKey);
+            params.put("ref", ref);
+            params.put("uid", uid);
+            params.put("callback", callback);
+            params.put("sign_version", "2");
+
+            //Calculate signature
+            String baseString = "";
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                baseString += entry.getKey() + "=" + entry.getValue();
+            }
+            baseString += secretKey;
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(baseString.getBytes(StandardCharsets.UTF_8)); //know which hash is being used here
+            String signature = DatatypeConverter.printHexBinary(hash).toLowerCase();
+
+            params.put("sign", signature);
+
+            //Build query string
+            StringBuilder queryString = new StringBuilder();
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                if (queryString.length() > 0) {
+                    queryString.append("&");
+                }
+                queryString.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            }
+            //Create connection
+            URL url = new URL("https://api.paymentwall.com/api/rest/payment/?" + queryString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            //Get response
+            int responseCode = connection.getResponseCode();
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+            return ResponseEntity.ok(response.toString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error checking payment status!!: " + e.getMessage());
+        }
+        }
+    }
+
+
+
+
+
+
+    //check payment status api using merchant_order_id
+
+
+
+
+
+
+
+
+
+
+
+

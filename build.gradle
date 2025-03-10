@@ -33,6 +33,8 @@ dependencies {
     implementation 'com.paymentwall:paymentwall-java:2.0.4'
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:3.0.1'
+    runtimeOnly 'com.sun.xml.bind:jaxb-impl:3.0.2'
 }
 
 tasks.named('test') {

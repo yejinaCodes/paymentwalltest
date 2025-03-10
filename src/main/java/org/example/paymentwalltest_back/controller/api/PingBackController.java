@@ -29,6 +29,7 @@ public class PingBackController {
             Config.getInstance().setPublicKey(publicKey);
             Config.getInstance().setPrivateKey(privateKey);
 
+//           Check pingback without ref check (since duplicate ref will not be able to proceed with validate check)
 
             //Pingback생성하고 검증하기
             Pingback pingback = new Pingback(params, request.getRemoteAddr());
