@@ -119,7 +119,7 @@ public class PaymentRestController {
 
         try{
             //Request parameters
-            Map<String, String> params = new LinkedHashMap<>(); // Using LinkedHashMap to maintain order
+            Map<String, String> params = new TreeMap<>(); // Using LinkedHashMap to maintain order
             params.put("key", projectKey);
             params.put("ref", ref);
             params.put("uid", uid);
@@ -127,15 +127,27 @@ public class PaymentRestController {
             params.put("sign_version", "2");
 
             //Calculate signature
-            String baseString = "";
+            StringBuilder baseString = new StringBuilder();
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                baseString += entry.getKey() + "=" + entry.getValue();
+                baseString.append(entry.getKey()).append("=").append(entry.getValue());
             }
-            baseString += secretKey;
+            baseString.append(secretKey);
 
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(baseString.getBytes(StandardCharsets.UTF_8)); //know which hash is being used here
-            String signature = DatatypeConverter.printHexBinary(hash).toLowerCase();
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] hash = digest.digest(baseString.toString().getBytes(StandardCharsets.UTF_8)); //know which hash is being used here
+
+            //Convert to hex
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            String signature = hexString.toString();
+
+            //String signature = DatatypeConverter.printHexBinary(hash).toLowerCase();
 
             params.put("sign", signature);
 
@@ -164,7 +176,7 @@ public class PaymentRestController {
                 response.append(inputLine);
             }
             in.close();
-            return ResponseEntity.ok(response.toString());
+            return ResponseEntity.status(responseCode).body(response.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
