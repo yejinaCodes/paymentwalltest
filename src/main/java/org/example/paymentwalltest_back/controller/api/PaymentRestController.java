@@ -112,7 +112,7 @@ public class PaymentRestController {
     //ref = 2017ec5142817b8a7f09d99e2a8320b1
 
     @GetMapping("/check-payment-status")
-    public ResponseEntity<String> checkPaymentStatus(@RequestParam(required=true) String ref,
+    public ResponseEntity<String> checkPaymentStatus(@RequestParam(required=true) String merchant_order_id,
                                                      @RequestParam(required=false, defaultValue = "user40012") String uid,
                                                      @RequestParam(required=false, defaultValue = "paymentStatusHandler") String callback){
 
@@ -123,7 +123,7 @@ public class PaymentRestController {
             //Request parameters
             Map<String, String> params = new TreeMap<>(); //Tree map for alphabetical order. not linked map
             params.put("key", projectKey);
-            params.put("ref", ref);
+            params.put("merchant_order_id", merchant_order_id);
             params.put("uid", uid);
             params.put("callback", callback);
             params.put("sign_version", "2");
