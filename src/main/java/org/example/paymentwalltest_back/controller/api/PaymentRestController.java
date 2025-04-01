@@ -8,6 +8,7 @@ import com.paymentwall.java.ProductBuilder;
 import com.paymentwall.java.Widget;
 import com.paymentwall.java.WidgetBuilder;
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.extern.log4j.Log4j2;
 import org.apache.coyote.Response;
 import org.apache.http.HttpResponse;
@@ -31,6 +32,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 import java.security.MessageDigest;
 import java.net.URL;
@@ -60,7 +65,6 @@ public class PaymentRestController {
                     put("history[registration_date]", "registered_date_of_user");
                     put("ps", "all"); // Replace the value of 'ps' with specific payment system short code for Widget API uni
                     put("success_url", "http://localhost:5173/success");
-                    
                 }
             });
             Widget widget = widgetBuilder.build();
@@ -202,5 +206,12 @@ public class PaymentRestController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Error checking payment status!!: " + e.getMessage());
         }
+        }
     }
-}
+
+
+
+
+
+
+    //check payment status api using merchant_order_id
